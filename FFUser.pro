@@ -11,7 +11,7 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 win32{
-    FFMPEGPATH = G:/Code/FFMPEG/ffmpeg
+    FFMPEGPATH = $$_PRO_FILE_PWD_/ffmpeg/win32
 }
 unix{
     FFMPEGPATH = /usr/local/ffmpeg/shared
