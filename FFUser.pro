@@ -5,8 +5,11 @@
 #-------------------------------------------------
 
 QT       -= gui
-
-TARGET = FFUser
+CONFIG(debug, debug|release) {
+    TARGET = FFUserD
+} else {
+    TARGET = FFUser
+}
 TEMPLATE = lib
 CONFIG += staticlib
 

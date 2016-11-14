@@ -1,4 +1,4 @@
-#ifndef FFMPEG_H
+﻿#ifndef FFMPEG_H
 #define FFMPEG_H
 
 #include <QObject>
@@ -38,7 +38,7 @@ public:
 	Params m_params;
 signals:
 	void encodeOneFrame(QByteArray data);
-	void decodeOneFrame(QByteArray data);
+	void decodeOneFrame(QByteArray data, int width, int height);
 public slots:
 };
 }

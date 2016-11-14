@@ -1,4 +1,4 @@
-#include "ffuser.h"
+﻿#include "ffuser.h"
 
 #include "ffmpeg.h"
 #include "ffencode.h"
@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <QEventLoop>
 using namespace std;
 namespace FF{
 
@@ -25,6 +26,7 @@ int FFUser::initDecode(Params params)
 {
 	SafeDeletePtr(decoder);
 	decoder = new FFDECODE;
+	connect(decoder, SIGNAL(decodeOneFrame(QByteArray, int, int)), this, SIGNAL(decodeOneFrame(QByteArray, int, int)));
 	return decoder->initAsDecode(params);
 }
 int FFUser::releaseDecode()
@@ -37,6 +39,7 @@ int FFUser::initEncode(Params params)
 {
 	SafeDeletePtr(encoder);
 	encoder = new FFENCODE;
+	connect(encoder, SIGNAL(encodeOneFrame(QByteArray)), this, SIGNAL(encodeOneFrame(QByteArray)));
 	return encoder->initAsEncode(params);
 }
 int FFUser::releaseEncode()
@@ -45,9 +48,9 @@ int FFUser::releaseEncode()
 	SafeDeletePtr(encoder);
 	return 0;
 }
-int FFUser::encode(const unsigned char *srcbuf, unsigned char *dstbuf, int srcsize, int destsize )
+int FFUser::encode(const unsigned char *buf, int size)
 {
-	if (!srcbuf || !dstbuf || srcsize <=0 || destsize <= 0) {
+	if (!buf || size <= 0) {
 		cout << "params error"<<endl;
 		return -1;
 	}
@@ -55,11 +58,11 @@ int FFUser::encode(const unsigned char *srcbuf, unsigned char *dstbuf, int srcsi
 		cout << "encoder not init"<<endl;
 		return -2;
 	}
-	encoder->encode(srcbuf, srcsize);
+	return encoder->encode(buf, size);
 }
-int FFUser::decode(const unsigned char *srcbuf, unsigned char *dstbuf, int srcsize, int destsize)
+int FFUser::decode(const unsigned char *buf, int size)
 {
-	if (!srcbuf || !dstbuf || srcsize <=0 || destsize <= 0) {
+	if (!buf || size <=0 ) {
 		cout << "params error"<<endl;
 		return -1;
 	}
@@ -67,7 +70,7 @@ int FFUser::decode(const unsigned char *srcbuf, unsigned char *dstbuf, int srcsi
 		cout << "decoder not init " << endl;
 		return -2;
 	}
-	decoder->decode(dstbuf, destsize);
+	return decoder->decode(buf, size);
 }
 
 }

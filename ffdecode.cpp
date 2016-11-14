@@ -1,4 +1,4 @@
-#include "ffdecode.h"
+﻿#include "ffdecode.h"
 #include <iostream>
 using namespace std;
 
@@ -91,7 +91,7 @@ int FFDECODE::write_out_frame()
 			pBuf[i] += pStride[i];
 		}
 	}
-	emit decodeOneFrame(data);
+	emit decodeOneFrame(data, frame->width, frame->height);
 	return 0;
 }
 }
