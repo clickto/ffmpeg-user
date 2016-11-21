@@ -1,13 +1,12 @@
-#include "ffmpeg.h"
-#include <iostream>
-using namespace std;
+﻿#include "ffmpeg.h"
+#include <QDebug>
 
 namespace FF {
 void outError(int num)
 {
 	char buf[1024];
 	av_strerror(num, buf, 1024);
-	cout << buf << endl;
+	qDebug() << buf;
 }
 FFMPEG::FFMPEG()
 	: codec(0)

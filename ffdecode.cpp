@@ -1,6 +1,5 @@
 ﻿#include "ffdecode.h"
-#include <iostream>
-using namespace std;
+#include <QDebug>
 
 namespace FF {
 int FFDECODE::initAsDecode(Params params)
@@ -9,12 +8,12 @@ int FFDECODE::initAsDecode(Params params)
 	av_init_packet(&packet);
 	codec = avcodec_find_decoder(params.codecID);
 	if (nullptr == codec) {
-		cout << "codec find failed"<<endl;
+		qDebug() << "codec find failed"<<endl;
 		return -1;
 	}
 	codecCtx = avcodec_alloc_context3(codec);
 	if (codecCtx == nullptr) {
-		cout << "codecCtx find failed" <<endl;
+		qDebug() << "codecCtx find failed" <<endl;
 		return -2;
 	}
 	if (codec->capabilities & AV_CODEC_CAP_TRUNCATED) {
@@ -22,16 +21,16 @@ int FFDECODE::initAsDecode(Params params)
 	}
 	codecParserCtx = av_parser_init(params.codecID);
 	if (codecParserCtx == nullptr) {
-		cout << "parser context init failed"<< endl;
+		qDebug() << "parser context init failed"<< endl;
 		return -3;
 	}
 	if (avcodec_open2(codecCtx, codec, NULL) < 0) {
-		cout << "codec open failed"<<endl;
+		qDebug() << "codec open failed"<<endl;
 		return -4;
 	}
 	frame = av_frame_alloc();
 	if (frame == nullptr) {
-		cout << "frame alloc failed" << endl;
+		qDebug() << "frame alloc failed" << endl;
 		return -5;
 	}
 	return 0;
@@ -56,7 +55,7 @@ int FFDECODE::decode(const unsigned char *buf, int size)
 		}
 		ret = avcodec_decode_video2(codecCtx, frame, &got_picture, &packet);
 		if (ret < 0) {
-			cout << "decode failed";
+			qDebug() << "decode failed";
 			outError(ret);
 			return ret;
 		}
@@ -69,7 +68,7 @@ int FFDECODE::decode(const unsigned char *buf, int size)
 	do {
 		ret = avcodec_decode_video2(codecCtx, frame, &got_picture, &packet);
 		if (ret < 0) {
-			cout  << "decode  failed"<<endl;
+			qDebug()  << "decode  failed"<<endl;
 			return ret;
 		}
 		if (got_picture) {

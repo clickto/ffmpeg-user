@@ -7,9 +7,9 @@
 #include "easy.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
+#include <QDebug>
 #include <QEventLoop>
-using namespace std;
+
 namespace FF{
 
 FFUser::FFUser()
@@ -51,11 +51,11 @@ int FFUser::releaseEncode()
 int FFUser::encode(const unsigned char *buf, int size)
 {
 	if (!buf || size <= 0) {
-		cout << "params error"<<endl;
+		qDebug() << "params error"<<endl;
 		return -1;
 	}
 	if (encoder == nullptr) {
-		cout << "encoder not init"<<endl;
+		qDebug() << "encoder not init"<<endl;
 		return -2;
 	}
 	return encoder->encode(buf, size);
@@ -63,11 +63,11 @@ int FFUser::encode(const unsigned char *buf, int size)
 int FFUser::decode(const unsigned char *buf, int size)
 {
 	if (!buf || size <=0 ) {
-		cout << "params error"<<endl;
+		qDebug() << "params error"<<endl;
 		return -1;
 	}
 	if (decoder == nullptr) {
-		cout << "decoder not init " << endl;
+		qDebug() << "decoder not init " << endl;
 		return -2;
 	}
 	return decoder->decode(buf, size);

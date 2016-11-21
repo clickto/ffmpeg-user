@@ -1,6 +1,5 @@
-#include "ffencode.h"
-#include <iostream>
-using namespace std;
+﻿#include "ffencode.h"
+#include <QDebug>
 
 namespace FF{
 int FFENCODE::initAsEncode(Params params)
@@ -9,12 +8,12 @@ int FFENCODE::initAsEncode(Params params)
 	int ret = 0;
 	codec = avcodec_find_encoder(params.codecID);
 	if (codec == nullptr) {
-		cout << "find encode failed" << endl;
+		qDebug() << "find encode failed" << endl;
 		return -1;
 	}
 	codecCtx = avcodec_alloc_context3(codec);
 	if (codecCtx == nullptr) {
-		cout << "alloc codec context failed"<< endl;
+		qDebug() << "alloc codec context failed"<< endl;
 		return -2;
 	}
 	codecCtx->width     = params.width;
@@ -28,13 +27,13 @@ int FFENCODE::initAsEncode(Params params)
 
 	ret = avcodec_open2(codecCtx, codec, NULL);
 	if ( ret< 0) {
-		cout << "open codec failed"<<endl;
+		qDebug() << "open codec failed"<<endl;
 		outError(ret);
 		return -3;
 	}
 	frame = av_frame_alloc();
 	if (frame == nullptr) {
-		cout << "alloc frame failed" << endl;
+		qDebug() << "alloc frame failed" << endl;
 		return -4;
 	}
 	frame->width = codecCtx->width;
@@ -42,7 +41,7 @@ int FFENCODE::initAsEncode(Params params)
 	frame->format = codecCtx->pix_fmt;
 	ret = av_image_alloc(frame->data, frame->linesize, frame->width, frame->height, (AVPixelFormat)frame->format, 32) ;
 	if (ret < 0) {
-		cout <<"alloc image failed"<<endl;
+		qDebug() <<"alloc image failed"<<endl;
 		outError(ret);
 		return -5;
 	}
@@ -59,7 +58,7 @@ int FFENCODE::encode(const unsigned char *buf, int size)
 	while (hasEncodeSize < size) {
 		ret = readData(buf, color_size, hasEncodeSize);
 		if (ret <0) {
-			cout <<"read data failed" << endl;
+			qDebug() <<"read data failed" << endl;
 			break;
 		}
 		av_init_packet(&packet);
@@ -70,7 +69,7 @@ int FFENCODE::encode(const unsigned char *buf, int size)
 		got_packet = 0;
 		ret = avcodec_encode_video2(codecCtx, &packet, frame, &got_packet);
 		if (ret < 0) {
-			cout << "encode failed "<< endl;
+			qDebug() << "encode failed "<< endl;
 			outError(ret);
 			return -1;
 		}
@@ -87,7 +86,7 @@ int FFENCODE::encode(const unsigned char *buf, int size)
 		packet.size = 0;
 		ret = avcodec_encode_video2(codecCtx, &packet, NULL, &got_packet);
 		if (ret < 0) {
-			cout << "encode failed "<< endl;
+			qDebug() << "encode failed "<< endl;
 			outError(ret);
 			return -1;
 		}

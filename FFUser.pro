@@ -4,15 +4,16 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
-CONFIG(debug, debug|release) {
-    TARGET = FFUserD
-} else {
-    TARGET = FFUser
-}
-TEMPLATE = lib
-CONFIG += staticlib
-
+QT  = gui core
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+#CONFIG(debug, debug|release) {
+#    TARGET = FFUserD
+#} else {
+#    TARGET = FFUser
+#}
+#TEMPLATE = lib
+#CONFIG += staticlib
+CONFIG += c++11
 win32{
     FFMPEGPATH = $$_PRO_FILE_PWD_/ffmpeg/win32
 }
@@ -34,14 +35,20 @@ DEPENDPATH += $${FFMPEGPATH}/include
 SOURCES += ffuser.cpp \
     ffmpeg.cpp \
     ffencode.cpp \
-    ffdecode.cpp
+    ffdecode.cpp \
+    main.cpp \
+    mainwindow.cpp
 
 HEADERS += ffuser.h \
     easy.h \
     ffmpeg.h \
     ffencode.h \
-    ffdecode.h
+    ffdecode.h \
+    mainwindow.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+FORMS += \
+    mainwindow.ui

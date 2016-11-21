@@ -3,8 +3,9 @@
 
 #include <QObject>
 #include <QByteArray>
-#include "ffuser.h"
 
+
+#include "stdint.h"
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -12,7 +13,7 @@ extern "C" {
 #include <libavutil/imgutils.h>
 #include <libavutil/samplefmt.h>
 }
-
+#include "ffuser.h"
 namespace FF{
 void outError(int num);
 class FFMPEG : public QObject
