@@ -37,14 +37,16 @@ SOURCES += ffuser.cpp \
     ffencode.cpp \
     ffdecode.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    convert.cpp
 
 HEADERS += ffuser.h \
     easy.h \
     ffmpeg.h \
     ffencode.h \
     ffdecode.h \
-    mainwindow.h
+    mainwindow.h \
+    convert.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

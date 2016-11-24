@@ -1,4 +1,5 @@
 ﻿#include "ffencode.h"
+#include "convert.h"
 #include <QDebug>
 
 namespace FF{
@@ -6,6 +7,7 @@ int FFENCODE::initAsEncode(Params params)
 {
 	m_params = params;
 	int ret = 0;
+
 	codec = avcodec_find_encoder(params.codecID);
 	if (codec == nullptr) {
 		qDebug() << "find encode failed" << endl;
@@ -23,8 +25,11 @@ int FFENCODE::initAsEncode(Params params)
 	codecCtx->time_base = r;
 	codecCtx->gop_size  = params.gop_size;
 	codecCtx->max_b_frames = params.max_b_frames;
-	codecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
+    codecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
 
+    //added by wxx @2016/11/21
+    av_opt_set(codecCtx->priv_data, "preset", "slow", 0);
+    //.....................................
 	ret = avcodec_open2(codecCtx, codec, NULL);
 	if ( ret< 0) {
 		qDebug() << "open codec failed"<<endl;
@@ -49,13 +54,15 @@ int FFENCODE::initAsEncode(Params params)
 }
 int FFENCODE::encode(const unsigned char *buf, int size)
 {
+    static int num = 0;
 	int ret = 0;
 	int hasEncodeSize = 0;
 	int color_size = m_params.width * m_params.height;
 	int count = 0;
 	int got_packet = 0;
 	QByteArray data;
-	while (hasEncodeSize < size) {
+
+    while (hasEncodeSize < size) {
 		ret = readData(buf, color_size, hasEncodeSize);
 		if (ret <0) {
 			qDebug() <<"read data failed" << endl;
@@ -77,13 +84,12 @@ int FFENCODE::encode(const unsigned char *buf, int size)
 			data.clear();
 			data.append((const char *)packet.data, packet.size);
 			emit encodeOneFrame(data);
+            qDebug() << "emit frame"<< num++;
 			av_packet_unref(&packet);
 		}
 	}
-	do {
-		av_init_packet(&packet);
-		packet.data = NULL;
-		packet.size = 0;
+
+    do {
 		ret = avcodec_encode_video2(codecCtx, &packet, NULL, &got_packet);
 		if (ret < 0) {
 			qDebug() << "encode failed "<< endl;
@@ -94,10 +100,12 @@ int FFENCODE::encode(const unsigned char *buf, int size)
 			data.clear();
 			data.append((const char *)packet.data, packet.size);
 			emit encodeOneFrame(data);
+            qDebug() << "emit frame"<< num++;
 			av_packet_unref(&packet);
 		}
-	} while(got_packet);
-	return 0;
+    } while(got_packet);
+
+    return count;
 }
 int FFENCODE::readData(const unsigned char *buf, int size, int &hasEncode)
 {
@@ -128,19 +136,28 @@ int FFENCODE::readData(const unsigned char *buf, int size, int &hasEncode)
 }
 int FFENCODE::read_gray_data(const unsigned char *buf, int size, int &hasEncode)
 {
-	memcpy((unsigned char *)frame->data[0], buf + hasEncode, size);
-	memset((unsigned char *)frame->data[1], 0x80, size / 4);
-	memset((unsigned char *)frame->data[2], 0x80, size / 4);
-	hasEncode += size + size / 2;
-	return 0;
+    memcpy((unsigned char *)frame->data[0], buf + hasEncode, size);
+    memset((unsigned char *)frame->data[1], 0x80, size / 4);
+    memset((unsigned char *)frame->data[2], 0x80, size / 4);
+    hasEncode += size + size / 2;
+    return 0;
 }
 int FFENCODE::read_rgb_data(const unsigned char *buf, int size, int &hasEncode)
 {
-	memcpy((unsigned char *)frame->data[0], buf + hasEncode, size);
-	memcpy((unsigned char *)frame->data[1], buf + hasEncode + size, size);
-	memcpy((unsigned char *)frame->data[2], buf + hasEncode + size + size, size);
-	hasEncode += size * 3;
-	return 0;
+//	memcpy((unsigned char *)frame->data[0], buf + hasEncode, size);
+//	memcpy((unsigned char *)frame->data[1], buf + hasEncode + size, size);
+//	memcpy((unsigned char *)frame->data[2], buf + hasEncode + size + size, size);
+//	hasEncode += size * 3;
+    unsigned char *yuv420p = new unsigned char[size *2];
+    memset(yuv420p,0,size *2);
+    unsigned char *rgbbuf = (unsigned char *)buf + hasEncode;
+    convert(rgbbuf,m_params.width,m_params.height,AV_PIX_FMT_RGB24,\
+            yuv420p,m_params.width,m_params.height,AV_PIX_FMT_YUV420P);
+	int yuvhasEncode = 0;
+    int ret = read_yuv_data(yuv420p,size, yuvhasEncode);
+	hasEncode += m_params.width * m_params.height * 3;
+    delete [] yuv420p;
+    return ret;
 }
 int FFENCODE::read_yuv_data(const unsigned char *buf, int size, int &hasEncode)
 {
@@ -155,11 +172,11 @@ int FFENCODE::read_yuv_data(const unsigned char *buf, int size, int &hasEncode)
 		color_height = color == 0 ? m_params.height : m_params.height / 2;
 		color_size	 = color_width * color_height;
 		if (color_width == color_stride){
-			memcpy((unsigned char *)frame->data[color], buf + hasEncode, color_size);
+            memcpy((unsigned char *)frame->data[color], buf+ hasEncode, color_size);
 			hasEncode += color_size;
 		} else {
 			for (int i = 0; i < color_height; i++) {
-				memcpy((char *)frame->data[color] + color_stride * i, buf + hasEncode, color_width);
+                memcpy((unsigned char *)frame->data[color] + color_stride * i, buf+ hasEncode, color_width);
 				hasEncode += color_width;
 			}
 		}

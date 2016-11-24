@@ -82,10 +82,12 @@ typedef struct _Params{
      * - decoding: unused
      */
 	int max_b_frames;
+
 	int srcFmt;
 	int destFmt;
 	AVCodecID codecID;
-	_Params()
+
+    _Params()
 		: width(256)
 		, height(256)
 		, bit_rate(4 * 1024 * 1024)

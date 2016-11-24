@@ -86,7 +86,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>encode.dat</string>
+     <string>encode.h264</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
@@ -154,7 +154,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>255</string>
+     <string>480</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_height">
@@ -183,7 +183,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>255</string>
+     <string>272</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_bitrate">
