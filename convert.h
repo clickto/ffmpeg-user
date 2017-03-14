@@ -1,18 +1,20 @@
-#ifndef CONVERT_H
+﻿#ifndef CONVERT_H
 #define CONVERT_H
 #include <stdio.h>
 
-#define __STDC_CONSTANT_MACROS
+//#define __STDC_CONSTANT_MACROS
 
 #ifdef _WIN32
 extern "C"
 {
+#include "stdint.h"
 #include "libswscale/swscale.h"
 #include "libavutil/opt.h"
 #include "libavutil/imgutils.h"
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
 #include "libavutil/samplefmt.h"
+
 }
 #else
 //Linux...

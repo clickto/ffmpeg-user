@@ -35,15 +35,15 @@ void MainWindow::on_pushButton_encode_clicked()
         qDebug() << "open src file failed" << file.errorString();
         return ;
     }
-if(!t_srcFmt){
+    if(!t_srcFmt){
 
-    name    = QString::fromLocal8Bit(file.readLine());
-    w       = QString::fromLocal8Bit(file.readLine());
-    maxsize = QString::fromLocal8Bit(file.readLine());
-}
+        name    = QString::fromLocal8Bit(file.readLine());
+        w       = QString::fromLocal8Bit(file.readLine());
+        maxsize = QString::fromLocal8Bit(file.readLine());
+    }
     QByteArray data = file.readAll();
     qDebug()<<"read pgm"  <<name << w << h << maxsize << data.size();
-//    qDebug()<<"data size:"<<data.size()<<endl;
+    //    qDebug()<<"data size:"<<data.size()<<endl;
     file.close();
     //open out file.
     QString encodeFileName = ui->lineEdit_encodeFileName->text();

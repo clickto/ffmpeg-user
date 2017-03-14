@@ -2,6 +2,7 @@
 #define FFUSER_H
 
 extern "C" {
+#include <stdint.h>
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 }

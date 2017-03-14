@@ -151,6 +151,7 @@ int FFENCODE::read_rgb_data(const unsigned char *buf, int size, int &hasEncode)
     unsigned char *yuv420p = new unsigned char[size *2];
     memset(yuv420p,0,size *2);
     unsigned char *rgbbuf = (unsigned char *)buf + hasEncode;
+
     convert(rgbbuf,m_params.width,m_params.height,AV_PIX_FMT_RGB24,\
             yuv420p,m_params.width,m_params.height,AV_PIX_FMT_YUV420P);
 	int yuvhasEncode = 0;
